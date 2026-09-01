@@ -3,113 +3,460 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PTV | Студия озвучки аниме</title>
-    <link rel="stylesheet" href="style.css"><link rel="icon" href="home.png" type="image/png">
-    <style> @font-face {
-    font-family: 'House Holiday Sans Cyrillic';
-    src: url('fonts/HouseHolidaySansCyrillic.woff2') format('woff2'),
-         url('fonts/HouseHolidaySansCyrillic.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;}
+    <title>Просмотр аниме — Необъятный океан</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --accent-hover: #0284c7;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-bottom: 8px;
+        }
+
+        /* Player Section */
+        .player-section {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            margin-bottom: 32px;
+            border: 1px solid var(--border-color);
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            background-color: #000;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .video-error {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ef4444;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 25px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .controls-panel {
+            padding: 16px;
+        }
+
+        .episodes-title {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: var(--text-muted);
+        }
+
+        .episodes-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .episode-btn {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .episode-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .episode-btn.active {
+            background-color: var(--accent-color);
+            color: #000;
+            border-color: var(--accent-color);
+        }
+
+        /* Comments Section */
+        .reviews-section {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .reviews-header {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .reviews-count {
+            background: var(--border-color);
+            color: var(--accent-color);
+            font-size: 0.9rem;
+            padding: 2px 10px;
+            border-radius: 12px;
+        }
+
+        .comment-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 12px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .submit-btn {
+            align-self: flex-end;
+            background-color: var(--accent-color);
+            color: #000;
+            font-weight: 600;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .comment {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .comment.new-comment {
+            border-color: var(--accent-color);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .comment-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .comment-text {
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+
+        .no-comments, .loading {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 20px 0;
+        }
     </style>
 </head>
 <body>
-    <!-- Шапка сайта -->
-    <header>
-        <div class="header-container">
-            <a href="/" class="logo">PTV STUDIO</a>
-            <nav class="nav-menu">
-                <a href="index.html" style="direction: none">Главная
 
-</a>
-                <a href="#">Каталог</a>
-                <a href="about.html" style = "direction: none;">О нас</a>
-            </nav>
-        </div>
-    </header>
-
-    <!-- Основной контент -->
     <div class="container">
-        <!-- Карточка аниме 1 -->
-        <div class="anime-card">
-            <img src="bluesea.png" alt="Необъятный океан" class="anime-poster">
-            <div class="anime-info">
-                <h2 class="anime-title"><a href="anime.html">Необъятный океан</a></h2>
-                <div class="anime-meta">
-                    <p><strong>Год выпуска:</strong> 14 июля 2018 года</p>
-                    <p><strong>Страна:</strong> Япония</p>
-                    <p><strong>Жанр:</strong> Приключения, Комедии, Драмы, Повседневность, Сёнэн, Этти</p>
-                    <p><strong>Озвучка:</strong> PTV (В процессе)</p>
-                    <p><strong>Серии:</strong> 1/12</p>
-                </div>
-                <p class="anime-description">
-                    Иори Катихара ужасно боится воды, у него развилась настоящая фобия, от которой парень никак не может избавиться. И так случилось, что герой аниме поступил в университет, который и расположился на побережье. Там он снимает комнату у семейства Котегава, члены которого владеют магазином снаряжения для дайвинга. Со временем Иори познакомится с веселыми парнями-дайверы, которые постараются изменить его приоритеты. Новые приятели считают, что Катихара обязательно должен испытать чувство при погружении на самую глубину и наслаждения подводными пейзажами!
-            </div>
-        </div>
+        <header>
+            <h1>Необъятный океан (Grand Blue)</h1>
+        </header>
 
-        <!-- Карточка аниме 2 -->
-        <div class="anime-card">
-            <img src="jojo.jpg" alt="" class="anime-poster">
-            <div class="anime-info">
-                <h2 class="anime-title" ><a href="jojo.html">ДжоДжо: Рыцари звёздной пыли</a></h2>
-                <div class="anime-meta">
-                    <p><strong>Год выпуска:</strong> 	4 октября 2012 года</p>
-                    <p><strong>Страна:</strong> Япония</p>
-                    <p><strong>Жанр:</strong> Приключения, Фэнтези, Комедии</p>
-                    <p><strong>Озвучка:</strong> PTV (в процессе)</p>
-                    <p><strong>Серии:</strong> 1/12</p>
-                </div>
-                
-                <p class="anime-description">
-                    Так уж сложилось, что в каждом поколении легендарной семьи Джостаров появляется прямой или побочный потомок, чьё имя начинается с того же слога, что и фамилия, вследствие чего он получает традиционное для семейства прозвище ДжоДжо.
-События разворачиваются в Великобритании на протяжении второй половины XIX века. Вор Дарио Брандо, столкнув в пропасть семейную повозку Джостаров, в которой был маленький Джонатан, выдаёт себя за спасителя, чем заслуживает снисхождение выжившего главы семейства. Спустя годы благодарный Джордж Джостар принимает в семью Дио Брандо, сына негодяя, который, проведя детство в мрачных закоулках и подворотнях, с первых же дней возненавидел беззаботных аристократов, живущих в достатке и ни в чем себе не отказывающих. Прибегая к самым подлым методам, юный злодей с самого начала пребывания в гостеприимной семье пытается испортить жизнь их сыну Джонатану, но юный аристократ не падает духом.
-Спустя восемь лет Джордж смертельно заболевает, но вскоре выясняется, что это дело рук подонка Дио, желающего заполучить наследство, который решил отравить своего отчима. Отправившись в преступный район города, ДжоДжо выясняет коварный план сводного брата и возвращается в поместье, чтобы его разоблачить. Узнав, что его раскрыли, Дио надевает старинную каменную маску, висевшую на стене…
-                </p>
+        <!-- Плеер -->
+        <section class="player-section">
+            <div class="video-container">
+                <iframe id="googleDrivePlayer" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                <div id="videoError" class="video-error"></div>
             </div>
-        </div>
-        <!-- Карточка аниме 3 -->
-        <div class="anime-card">
-            <img src="PIDORTV.jpg" alt="" class="anime-poster">
-            <div class="anime-info">
-                <h2 class="anime-title" ><a href="SPIDORTV.html">П*дор TV</a></h2>
-                <div class="anime-meta">
-                    <p><strong>Год выпуска:</strong> 2019 года</p>
-                    <p><strong>Страна:</strong> Беларусь</p>
-                    <p><strong>Жанр:</strong> Приключения, Фэнтези, Комедии</p>
-                    <p><strong>Озвучка:</strong> PTV (полностью)</p>
-                    <p><strong>Серии:</strong> все/ничего</p>
-                </div>
-                
-                <p class="anime-description">
-                    История толком не понятно про что . Иль про Гошу , иль про Катю.Но известно лишь одно.... "Я - доктор Дима Пососовский"</p>
+            <div class="controls-panel">
+                <div class="episodes-title">Выбор серии:</div>
+                <div id="episodesContainer" class="episodes-grid"></div>
             </div>
-        </div>
-        <!-- Карточка аниме 4 -->
-        <div class="anime-card">
-            <img src="BOGDAN.jpg" alt="" class="anime-poster">
-            <div class="anime-info">
-                <h2 class="anime-title" ><a href="bogdan.html">ПОИСКИ БОДИ</a></h2>
-                <div class="anime-meta">
-                    <p><strong>Год выпуска:</strong> 2025 года</p>
-                    <p><strong>Страна:</strong> Беларусь</p>
-                    <p><strong>Жанр:</strong> Приключения,Основано на реальных событиях, Комедии</p>
-                    <p><strong>Озвучка:</strong> PTV (полностью)</p>
-                    <p><strong>Серии:</strong> 1/1</p>
+        </section>
+
+        <!-- Отзывы -->
+        <section class="reviews-section">
+            <h2 class="reviews-header">
+                Отзывы <span id="reviewsCounter" class="reviews-count">0</span>
+            </h2>
+
+            <form id="commentForm" class="comment-form">
+                <div class="form-group">
+                    <input type="text" id="commentName" placeholder="Ваше имя" required maxlength="50">
                 </div>
-                
-                <p class="anime-description">
-                    История о деревенском пареньке , который потерял друга в лесу....</p>
+                <div class="form-group">
+                    <textarea id="commentText" rows="3" placeholder="Оставьте ваш отзыв о серии..." required maxlength="1000"></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Оставить отзыв</button>
+            </form>
+
+            <div id="commentsList" class="comments-list">
+                <div class="loading">Загрузка отзывов...</div>
             </div>
-        </div>
+        </section>
     </div>
-    
 
-    <!-- Подвал сайта -->
-    <footer>
-        <div class="footer-container">
-            <p>© 2023 PTV Studio. Все права защищены.</p>
-        </div>
-    </footer>
+    <script>
+        // Данные о сериях
+        const episodesData = [
+            { 
+                id: 1, 
+                driveId: "13on0SgmZwz6dkpW0XasDWIHOmQ4gkBO-",
+                name: "Серия 1" 
+            }
+        ];
+
+        // URL вашего Google Apps Script веб-приложения
+        const API_URL = "https://script.google.com/macros/s/AKfycby0ssgkTI-KW5WI-o1wTtGG-gOvbZVM0xAsn9_9kn0Zm588xZTG8KtDNAAM3P_CqCln/exec";
+
+        // Экранирование спецсимволов HTML против XSS
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const player = document.getElementById('googleDrivePlayer');
+            const episodesContainer = document.getElementById('episodesContainer');
+            const errorDisplay = document.getElementById('videoError');
+            const commentForm = document.getElementById('commentForm');
+            const commentsList = document.getElementById('commentsList');
+            const reviewsCounter = document.getElementById('reviewsCounter');
+
+            // Инициализация видеоплеера
+            function initPlayer() {
+                episodesData.forEach(episode => {
+                    const btn = document.createElement('button');
+                    btn.className = 'episode-btn';
+                    btn.textContent = episode.id;
+                    
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        loadGoogleDriveVideo(episode.driveId);
+                    });
+                    
+                    episodesContainer.appendChild(btn);
+                });
+
+                if (episodesData.length > 0) {
+                    episodesContainer.querySelector('.episode-btn').click();
+                }
+            }
+
+            function loadGoogleDriveVideo(fileId) {
+                errorDisplay.style.display = 'none';
+                const embedUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+                player.src = embedUrl;
+                
+                player.addEventListener('error', () => {
+                    errorDisplay.textContent = 'Ошибка загрузки видео. Проверьте доступ к файлу.';
+                    errorDisplay.style.display = 'block';
+                });
+            }
+
+            // Загрузка отзывов (GET)
+            async function loadReviews() {
+                try {
+                    commentsList.innerHTML = '<div class="loading">Загрузка отзывов...</div>';
+                    
+                    const response = await fetch(API_URL, { redirect: 'follow' });
+                    const reviews = await response.json();
+                    
+                    commentsList.innerHTML = '';
+                    reviewsCounter.textContent = Array.isArray(reviews) ? reviews.length : 0;
+                    
+                    if (!Array.isArray(reviews) || reviews.length === 0) {
+                        commentsList.innerHTML = '<p class="no-comments">Пока нет отзывов. Будьте первым!</p>';
+                        return;
+                    }
+                    
+                    reviews.forEach(review => {
+                        const reviewDate = new Date(review.Дата || review.date || Date.now());
+                        const formattedDate = isNaN(reviewDate) ? '' : reviewDate.toLocaleString('ru-RU', {
+                            day: 'numeric',
+                            month: 'numeric',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        
+                        const reviewElement = document.createElement('div');
+                        reviewElement.className = 'comment';
+                        
+                        const author = escapeHtml(review.Имя || review.name || 'Аноним');
+                        const text = escapeHtml(review['Текст отзыва'] || review.text || '');
+
+                        reviewElement.innerHTML = `
+                            <div class="comment-header">
+                                <span class="comment-author">${author}</span>
+                                <span class="comment-date">${formattedDate}</span>
+                            </div>
+                            <div class="comment-text">${text}</div>
+                        `;
+                        
+                        commentsList.appendChild(reviewElement);
+                    });
+                } catch (error) {
+                    console.error('Ошибка загрузки отзывов:', error);
+                    commentsList.innerHTML = '<p class="no-comments">Ошибка загрузки отзывов. Попробуйте позже.</p>';
+                }
+            }
+
+            // Отправка отзыва (POST)
+            async function addReview(name, text) {
+                try {
+                    const payload = JSON.stringify({
+                        name: name,
+                        text: text,
+                        anime_id: "grand_blue"
+                    });
+
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8'
+                        },
+                        body: payload,
+                        redirect: 'follow'
+                    });
+                    
+                    const result = await response.json();
+                    if (result.status === 'success' || result.result === 'success') {
+                        await loadReviews();
+                        return true;
+                    }
+                } catch (error) {
+                    console.error('Ошибка отправки отзыва:', error);
+                }
+                return false;
+            }
+
+            // Инициализация
+            initPlayer();
+            loadReviews();
+            
+            // Обработчик формы
+            commentForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const nameInput = document.getElementById('commentName');
+                const textInput = document.getElementById('commentText');
+                const submitBtn = commentForm.querySelector('.submit-btn');
+
+                const name = nameInput.value.trim();
+                const text = textInput.value.trim();
+                
+                if (name && text) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Отправка...';
+
+                    const success = await addReview(name, text);
+                    
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Оставить отзыв';
+
+                    if (success) {
+                        commentForm.reset();
+                        if (commentsList.firstChild) {
+                            commentsList.firstChild.classList.add('new-comment');
+                            setTimeout(() => {
+                                if (commentsList.firstChild) {
+                                    commentsList.firstChild.classList.remove('new-comment');
+                                }
+                            }, 500);
+                        }
+                    } else {
+                        alert('Ошибка при отправке отзыва. Проверьте настройки Google Apps Script.');
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
